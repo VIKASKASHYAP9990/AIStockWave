@@ -595,9 +595,10 @@ def show_auth_pages():
 
 # ==================== MAIN WORKSPACE ====================
 if st.session_state["user"] is None:
-    show_landing_page()
-    st.write("---")
-    show_auth_pages()
+    if st.session_state["auth_mode"] == "Landing":
+        show_landing_page()
+    else:
+        show_auth_pages()
 else:
     user = st.session_state["user"]
     
