@@ -84,7 +84,7 @@ body {
     font-family: 'Outfit', sans-serif;
     font-size: 32px;
     font-weight: 700;
-    color: var(--color-blue);
+    color: var(--color-up);
     text-align: center;
 }
 
@@ -130,7 +130,7 @@ body {
 }
 
 .form-input:focus {
-    border-color: var(--color-blue);
+    border-color: var(--color-up);
     background-color: rgba(255, 255, 255, 0.08);
 }
 
@@ -149,12 +149,12 @@ body {
 }
 
 .btn-primary {
-    background-color: var(--color-blue);
+    background-color: var(--color-up);
     color: var(--color-text);
 }
 
 .btn-primary:hover {
-    background-color: var(--color-blue-hover);
+    background-color: var(--color-up-hover);
 }
 
 .btn-secondary {
@@ -194,7 +194,7 @@ body {
 }
 
 .auth-link {
-    color: var(--color-blue);
+    color: var(--color-up);
     text-decoration: none;
     font-weight: 600;
     cursor: pointer;
