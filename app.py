@@ -67,6 +67,19 @@ def inject_theme_styles():
                 margin-bottom: 15px;
                 box-shadow: 0 4px 6px rgba(0,0,0,0.02);
             }
+            /* Custom Emerald Green button actions */
+            div.stButton > button {
+                background-color: #26A69A !important;
+                color: #FFFFFF !important;
+                border-radius: 8px !important;
+                border: 1px solid #26A69A !important;
+                font-weight: 600 !important;
+                transition: all 0.2s ease !important;
+            }
+            div.stButton > button:hover {
+                background-color: #1f8a7e !important;
+                border-color: #1f8a7e !important;
+            }
         </style>
         """, unsafe_allow_html=True)
     else: # Dark Mode
@@ -107,6 +120,19 @@ def inject_theme_styles():
                 padding: 20px;
                 margin-bottom: 15px;
                 box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+            }
+            /* Custom Emerald Green button actions */
+            div.stButton > button {
+                background-color: #26A69A !important;
+                color: #FFFFFF !important;
+                border-radius: 8px !important;
+                border: 1px solid #26A69A !important;
+                font-weight: 600 !important;
+                transition: all 0.2s ease !important;
+            }
+            div.stButton > button:hover {
+                background-color: #1f8a7e !important;
+                border-color: #1f8a7e !important;
             }
         </style>
         """, unsafe_allow_html=True)
