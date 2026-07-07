@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AIStockWave – AI-Powered Stock Market Analysis & Paper Trading</title>
+    <!-- Chart.js CDN for interactive stock charts -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <!-- ==================== AUTH SECTION ==================== -->
+    <div id="authContainer" class="auth-container">
+        <!-- Login Card -->
+        <div id="loginCard" class="auth-card">
+            <div class="auth-brand">AIStockWave</div>
+            <div class="auth-title">Welcome Back</div>
+            <div class="auth-subtitle">Login to trade, track and analyze stocks using AI.</div>
+            
+            <div id="loginFeedback"></div>
+
+            <div class="form-group">
+                <label class="form-label">Email Address</label>
+                <input type="email" id="loginEmail" class="form-input" placeholder="Enter your email address">
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Password</label>
+                <input type="password" id="loginPassword" class="form-input" placeholder="Enter your password">
+            </div>
+
+            <button onclick="authService.login()" class="btn btn-primary">Sign In</button>
+
+            <div class="auth-footer">
+                Don't have an account? <span onclick="authService.switchForm('signup')" class="auth-link">Sign Up</span>
+            </div>
+        </div>
+
+        <!-- Signup Card -->
+        <div id="signupCard" class="auth-card" style="display: none;">
+            <div class="auth-brand">AIStockWave</div>
+            <div class="auth-title">Create Account</div>
+            <div class="auth-subtitle">Register to trade stocks with ₹100,000 in paper money.</div>
+
+            <div id="signupFeedback"></div>
+
+            <div class="form-group">
+                <label class="form-label">Full Name</label>
+                <input type="text" id="signupName" class="form-input" placeholder="Enter your full name">
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Email Address</label>
+                <input type="email" id="signupEmail" class="form-input" placeholder="Enter email address">
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Password</label>
+                <input type="password" id="signupPassword" class="form-input" placeholder="Password (min 6 characters)">
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Confirm Password</label>
+                <input type="password" id="signupConfirm" class="form-input" placeholder="Confirm your password">
+            </div>
+
+            <button onclick="authService.register()" class="btn btn-primary">Create Account</button>
+
+            <div class="auth-footer">
+                Already have an account? <span onclick="authService.switchForm('login')" class="auth-link">Log In</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- ==================== MAIN WORKSPACE ==================== -->
+    <div id="appContainer" class="app-container">
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar">
+            <div class="sidebar-logo">AIStockWave</div>
+            <nav class="sidebar-menu">
+                <div id="menu-dashboard" onclick="appRouter.navigate('dashboard')" class="menu-item active">📊 Dashboard</div>
+                <div id="menu-portfolio" onclick="appRouter.navigate('portfolio')" class="menu-item">💼 Portfolio</div>
+                <div id="menu-watchlist" onclick="appRouter.navigate('watchlist')" class="menu-item">⭐ Watchlist</div>
+                <div id="menu-news" onclick="appRouter.navigate('news')" class="menu-item">📰 Market News</div>
+                <div id="menu-admin" onclick="appRouter.navigate('admin')" class="menu-item" style="display: none;">🛠️ Admin Panel</div>
+                <div id="menu-profile" onclick="appRouter.navigate('profile')" class="menu-item">👤 Profile & Keys</div>
+            </nav>
+            <div onclick="authService.logout()" class="menu-item menu-item-logout">🚪 Logout</div>
+        </aside>
+
+        <!-- Main Workspace -->
+        <main class="workspace">
+            <!-- Header Panel -->
+            <header class="header">
+                <div class="header-title-box">
+                    <h1 id="headerTitle">Dashboard Overview</h1>
+                </div>
+                <div class="header-user-box">
+                    <div id="headerUserWelcome" class="header-username">Welcome, Paper Trader</div>
+                    <div class="header-balance-box">
+                        Virtual Balance: <span id="headerBalance" class="header-balance-val">₹100,000.00</span>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Scrollable Workspace Frame -->
+            <div class="main-content">
+
+                <!-- 1. DASHBOARD OVERVIEW -->
+                <div id="view-dashboard" class="view-panel active">
+                    <!-- Search Widget -->
+                    <div class="card search-widget">
+                        <label style="font-weight: 700; font-size: 14px;">Search Ticker:</label>
+                        <input type="text" id="searchInput" class="search-input" placeholder="Search by stock symbol (e.g. AAPL, TSLA) or company name...">
+                        <button onclick="uiController.executeSearch()" class="btn btn-primary">🔍 Search</button>
+                        <div id="searchFeedback" style="color: var(--color-down); font-size: 13px;"></div>
+                    </div>
+
+                    <!-- Indices row -->
+                    <div class="metrics-row">
+                        <div class="card metric-card">
+                            <span class="metric-lbl">🇮🇳 Nifty 50</span>
+                            <div>
+                                <span id="idxNiftyPrice" class="metric-val">23,450.25</span>
+                                <span id="idxNiftyChange" class="metric-change text-up" style="margin-left: 8px;">+0.42%</span>
+                            </div>
+                        </div>
+                        <div class="card metric-card">
+                            <span class="metric-lbl">🇮🇳 SENSEX</span>
+                            <div>
+                                <span id="idxSensexPrice" class="metric-val">76,820.40</span>
+                                <span id="idxSensexChange" class="metric-change text-up" style="margin-left: 8px;">+0.38%</span>
+                            </div>
+                        </div>
+                        <div class="card metric-card">
+                            <span class="metric-lbl">🇺🇸 S&P 500</span>
+                            <div>
+                                <span id="idxSpPrice" class="metric-val">5,420.10</span>
+                                <span id="idxSpChange" class="metric-change text-down" style="margin-left: 8px;">-0.15%</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Active Market Watch Table -->
+                    <div class="card">
+                        <div class="card-header">
+                            <h2 class="card-title">🔥 Active Market Watch</h2>
+                        </div>
+                        <div class="table-container">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>Symbol</th>
+                                        <th>Company Name</th>
+                                        <th>Price</th>
+                                        <th>Change (%)</th>
+                                        <th>Today's High</th>
+                                        <th>Today's Low</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="marketTableBody">
+                                    <!-- Populated dynamically by JS -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 2. STOCK DETAILS VIEW -->
+                <div id="view-details" class="view-panel">
+                    <!-- Detail Header card -->
+                    <div class="card" style="display: flex; justify-content: space-between; align-items: center;">
+                        <div>
+                            <h2 id="detailSymbol" style="font-size: 26px; font-weight: 700; color: white;">AAPL</h2>
+                            <span id="detailName" class="lbl-caption" style="font-size: 14px;">Apple Inc.</span>
+                        </div>
+                        <div style="text-align: right; display: flex; align-items: center; gap: 15px;">
+                            <div>
+                                <div id="detailPrice" style="font-size: 26px; font-weight: 700;">₹185.25</div>
+                                <div id="detailChange" style="font-weight: 600; font-size: 14px;" class="text-up">+0.68% Today</div>
+                            </div>
+                            <button id="watchlistToggleBtn" onclick="uiController.toggleWatchlist()" class="btn btn-primary">☆ Add to Watchlist</button>
+                        </div>
+                    </div>
+
+                    <!-- Chart Widget -->
+                    <div class="card">
+                        <div class="card-header">
+                            <h2 class="card-title">📈 Technical Performance Chart</h2>
+                            <div class="chart-toggles">
+                                <button onclick="uiController.changeChartInterval('1D', this)" class="chart-toggle-btn">1D</button>
+                                <button onclick="uiController.changeChartInterval('1W', this)" class="chart-toggle-btn">1W</button>
+                                <button onclick="uiController.changeChartInterval('1M', this)" class="chart-toggle-btn active">1M</button>
+                                <button onclick="uiController.changeChartInterval('6M', this)" class="chart-toggle-btn">6M</button>
+                                <button onclick="uiController.changeChartInterval('1Y', this)" class="chart-toggle-btn">1Y</button>
+                                <button onclick="uiController.changeChartInterval('5Y', this)" class="chart-toggle-btn">5Y</button>
+                            </div>
+                        </div>
+                        <div class="chart-box">
+                            <canvas id="stockDetailChart"></canvas>
+                        </div>
+                    </div>
+
+                    <!-- Split Row: Stats and Paper Trading -->
+                    <div class="split-layout">
+                        <!-- Stats Grid -->
+                        <div class="card">
+                            <div class="card-header">
+                                <h2 class="card-title">📊 Key Financial Statistics</h2>
+                            </div>
+                            <div class="stats-grid">
+                                <div class="stat-cell"><span class="stat-title">Open Price</span><span id="statOpen" class="stat-value">₹184.00</span></div>
+                                <div class="stat-cell"><span class="stat-title">Previous Close</span><span id="statClose" class="stat-value">₹184.50</span></div>
+                                <div class="stat-cell"><span class="stat-title">Market Capitalization</span><span id="statCap" class="stat-value">₹2,900.5B</span></div>
+                                <div class="stat-cell"><span class="stat-title">Today's High</span><span id="statHigh" class="stat-value">₹186.40</span></div>
+                                <div class="stat-cell"><span class="stat-title">Today's Low</span><span id="statLow" class="stat-value">₹183.50</span></div>
+                                <div class="stat-cell"><span class="stat-title">Trading Volume</span><span id="statVol" class="stat-value">52,000,000</span></div>
+                                <div class="stat-cell"><span class="stat-title">P/E Ratio</span><span id="statPE" class="stat-value">28.5</span></div>
+                                <div class="stat-cell"><span class="stat-title">EPS</span><span id="statEPS" class="stat-value">₹6.50</span></div>
+                                <div class="stat-cell"><span class="stat-title">Dividend Yield</span><span id="statDiv" class="stat-value">0.52%</span></div>
+                                <div class="stat-cell"><span class="stat-title">52-Week High</span><span id="stat52H" class="stat-value">₹199.62</span></div>
+                                <div class="stat-cell"><span class="stat-title">52-Week Low</span><span id="stat52L" class="stat-value">₹164.08</span></div>
+                            </div>
+                        </div>
+
+                        <!-- Trade Desk Card -->
+                        <div class="card trade-box">
+                            <h2 class="card-title">💼 Paper Trading Desk</h2>
+                            <span id="tradeAvailableCash" class="lbl-caption">Available Cash: ₹100,000.00</span>
+                            
+                            <div class="trade-toggle">
+                                <button id="tradeToggleBuy" onclick="uiController.setTradeMode('BUY')" class="trade-toggle-btn active buy">BUY SHARES</button>
+                                <button id="tradeToggleSell" onclick="uiController.setTradeMode('SELL')" class="trade-toggle-btn">SELL SHARES</button>
+                            </div>
+
+                            <div class="form-group" style="margin-top: 10px;">
+                                <label class="form-label">Order Quantity</label>
+                                <input type="number" id="tradeQuantity" class="form-input" min="1" placeholder="Enter quantity to trade" oninput="uiController.recalculateTradeCost()">
+                            </div>
+
+                            <div style="display: flex; gap: 5px; font-size: 13px; color: var(--color-caption);">
+                                Estimated Value: <span id="tradeEstCost" style="color: white; font-weight: 700;">₹0.00</span>
+                            </div>
+
+                            <div id="tradeFeedback"></div>
+
+                            <button onclick="uiController.executeTrade()" class="btn btn-primary btn-buy" id="tradeSubmitBtn" style="padding: 12px;">EXECUTE TRADE</button>
+                        </div>
+                    </div>
+
+                    <!-- AI Auditor Card -->
+                    <div class="card">
+                        <div class="ai-auditor-header">
+                            <h2 class="card-title">🤖 AI-Powered Stock Auditor</h2>
+                            <span id="aiRating" class="badge badge-up">RATING: STRONG BUY</span>
+                        </div>
+                        <p id="aiSummary" style="font-size: 13.5px; line-height: 1.5; color: white; margin-bottom: 16px;"></p>
+                        
+                        <div class="ai-grid">
+                            <div>
+                                <div class="ai-details-header text-up">🟢 Growth Strengths</div>
+                                <p id="aiStrengths" class="ai-details-content"></p>
+                            </div>
+                            <div>
+                                <div class="ai-details-header text-down">🔴 Risk Factors</div>
+                                <p id="aiRisks" class="ai-details-content"></p>
+                            </div>
+                        </div>
+
+                        <div class="ai-lesson">
+                            <div style="font-weight: bold; color: var(--color-blue); margin-bottom: 6px;">📚 Investor Educational Concept</div>
+                            <p id="aiEducation" style="font-size: 12.5px; line-height: 1.45;"></p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 3. PORTFOLIO VIEW -->
+                <div id="view-portfolio" class="view-panel">
+                    <!-- Metrics Summary Cards -->
+                    <div class="metrics-row">
+                        <div class="card metric-card">
+                            <span class="metric-lbl">💸 Virtual Cash Available</span>
+                            <span id="portCashBal" class="metric-val">₹100,000.00</span>
+                        </div>
+                        <div class="card metric-card">
+                            <span class="metric-lbl">📈 Net Assets (Cash + Stock)</span>
+                            <span id="portNetAssets" class="metric-val">₹100,000.00</span>
+                        </div>
+                        <div class="card metric-card">
+                            <span class="metric-lbl">📊 Lifetime Net Returns</span>
+                            <div>
+                                <span id="portReturns" class="metric-val">₹0.00</span>
+                                <span id="portReturnsPct" class="metric-change text-up" style="margin-left: 8px;">+0.00%</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Current Holdings Table -->
+                    <div class="card">
+                        <div class="card-header">
+                            <h2 class="card-title">💼 Current Stock Holdings</h2>
+                        </div>
+                        <div class="table-container">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>Symbol</th>
+                                        <th>Company Name</th>
+                                        <th>Shares</th>
+                                        <th>Avg Buy Price</th>
+                                        <th>Live Price</th>
+                                        <th>Current Value</th>
+                                        <th>Profit/Loss</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="portfolioHoldingsBody">
+                                    <!-- Dynamic -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Transactions Log -->
+                    <div class="card">
+                        <div class="card-header">
+                            <h2 class="card-title">📜 Transaction Execution History</h2>
+                        </div>
+                        <div class="table-container">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>Date & Time</th>
+                                        <th>Action</th>
+                                        <th>Symbol</th>
+                                        <th>Shares</th>
+                                        <th>Trade Price</th>
+                                        <th>Gross Value</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="portfolioTxsBody">
+                                    <!-- Dynamic -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 4. WATCHLIST VIEW -->
+                <div id="view-watchlist" class="view-panel">
+                    <div class="card-header" style="margin-bottom: 0;">
+                        <h2 class="card-title">⭐ Saved Ticker Watchlist</h2>
+                    </div>
+                    <div id="watchlistCardsGrid" class="watchlist-grid">
+                        <!-- Dynamic -->
+                    </div>
+                </div>
+
+                <!-- 5. MARKET NEWS VIEW -->
+                <div id="view-news" class="view-panel">
+                    <div class="card-header" style="margin-bottom: 0;">
+                        <h2 class="card-title">📰 Financial Market News & Events</h2>
+                    </div>
+                    <div class="card news-list" id="newsListContainer">
+                        <!-- Dynamic -->
+                    </div>
+                </div>
+
+                <!-- 6. ADMIN DASHBOARD VIEW -->
+                <div id="view-admin" class="view-panel">
+                    <!-- Metrics row -->
+                    <div class="metrics-row">
+                        <div class="card metric-card">
+                            <span class="metric-lbl">👥 Registered Accounts</span>
+                            <span id="adminUsersCount" class="metric-val">0</span>
+                        </div>
+                        <div class="card metric-card">
+                            <span class="metric-lbl">💳 Total Trade Transactions</span>
+                            <span id="adminTxsCount" class="metric-val">0</span>
+                        </div>
+                        <div class="card metric-card">
+                            <span class="metric-lbl">💰 Gross Traded Volume</span>
+                            <span id="adminGrossVolume" class="metric-val">₹0.00</span>
+                        </div>
+                    </div>
+
+                    <!-- User Account Management -->
+                    <div class="card">
+                        <h2 class="card-title" style="margin-bottom: 15px;">👤 Active User Account Management</h2>
+                        <div class="table-container">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Full Name</th>
+                                        <th>Email Address</th>
+                                        <th>Virtual Cash Balance</th>
+                                        <th>Is Admin</th>
+                                        <th>Wallet Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="adminUsersTableBody">
+                                    <!-- Dynamic -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Split Row for Registration and News Publish Forms -->
+                    <div class="admin-split">
+                        <!-- Add stock -->
+                        <div class="card">
+                            <h2 class="card-title" style="margin-bottom: 15px;">Grid Register New Ticker Symbol</h2>
+                            <div id="adminStockFeedback"></div>
+                            <div class="form-group" style="margin-bottom: 12px;">
+                                <label class="form-label">Symbol</label>
+                                <input type="text" id="adminStockSymbol" class="form-input" placeholder="e.g. INFY">
+                            </div>
+                            <div class="form-group" style="margin-bottom: 12px;">
+                                <label class="form-label">Company Name</label>
+                                <input type="text" id="adminStockName" class="form-input" placeholder="e.g. Infosys Ltd">
+                            </div>
+                            <div class="form-group" style="margin-bottom: 12px;">
+                                <label class="form-label">Initial Price (₹)</label>
+                                <input type="number" id="adminStockPrice" class="form-input" placeholder="Initial price (e.g. 1450.00)">
+                            </div>
+                            <div class="form-group" style="margin-bottom: 15px;">
+                                <label class="form-label">Market Cap ($ Billions)</label>
+                                <input type="number" id="adminStockCap" class="form-input" placeholder="Market Cap in $ Billions">
+                            </div>
+                            <button onclick="uiController.adminAddStock()" class="btn btn-primary" style="width: 100%;">Register Stock</button>
+                        </div>
+
+                        <!-- Publish news -->
+                        <div class="card">
+                            <h2 class="card-title" style="margin-bottom: 15px;">📰 Publish Financial Market Event</h2>
+                            <div id="adminNewsFeedback"></div>
+                            <div class="form-group" style="margin-bottom: 12px;">
+                                <label class="form-label">Headline Title</label>
+                                <input type="text" id="adminNewsTitle" class="form-input" placeholder="News Headline Title">
+                            </div>
+                            <div class="form-group" style="margin-bottom: 12px;">
+                                <label class="form-label">Publisher Source</label>
+                                <input type="text" id="adminNewsSource" class="form-input" placeholder="Source (e.g. Wall Street Journal)">
+                            </div>
+                            <div class="form-group" style="margin-bottom: 15px;">
+                                <label class="form-label">Content Description</label>
+                                <textarea id="adminNewsDesc" class="form-input" rows="4" placeholder="Detailed content writeup..." style="resize: none;"></textarea>
+                            </div>
+                            <button onclick="uiController.adminPublishNews()" class="btn btn-primary" style="width: 100%;">Publish News Event</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 7. PROFILE & KEYS VIEW -->
+                <div id="view-profile" class="view-panel">
+                    <div class="split-layout">
+                        <!-- Left Column: Info & Password -->
+                        <div style="display: flex; flex-direction: column; gap: 20px;">
+                            <!-- Profile stats -->
+                            <div class="card">
+                                <h2 class="card-title" style="margin-bottom: 15px;">👤 Personal Trader Profile</h2>
+                                <div style="display: flex; flex-direction: column; gap: 10px; font-size: 14px;">
+                                    <div style="display: flex;"><span class="lbl-caption" style="width: 140px;">Trader Name:</span><span id="profileName" style="font-weight: 600; color: white;">Paper Trader</span></div>
+                                    <div style="display: flex;"><span class="lbl-caption" style="width: 140px;">Email Address:</span><span id="profileEmail" style="font-weight: 600; color: white;">user@aistockwave.com</span></div>
+                                    <div style="display: flex;"><span class="lbl-caption" style="width: 140px;">Paper Balance:</span><span id="profileBalance" style="font-weight: 700; color: var(--color-up);">₹100,000.00</span></div>
+                                </div>
+                            </div>
+
+                            <!-- Reset password -->
+                            <div class="card" style="display: flex; flex-direction: column; gap: 12px;">
+                                <h2 class="card-title">🔒 Secure Password Management</h2>
+                                <div id="profilePasswordFeedback"></div>
+                                <div class="form-group">
+                                    <label class="form-label">Current Password</label>
+                                    <input type="password" id="profileCurPassword" class="form-input" placeholder="Enter current password">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">New Password</label>
+                                    <input type="password" id="profileNewPassword" class="form-input" placeholder="Create new password (min 6 characters)">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Confirm New Password</label>
+                                    <input type="password" id="profileConfirmPassword" class="form-input" placeholder="Confirm new password">
+                                </div>
+                                <button onclick="uiController.updatePassword()" class="btn btn-primary" style="margin-top: 5px;">Update Password</button>
+                            </div>
+                        </div>
+
+                        <!-- Right Column: API keys config -->
+                        <div class="card" style="display: flex; flex-direction: column; gap: 12px; height: fit-content;">
+                            <h2 class="card-title">🔌 Live Stock API Configuration</h2>
+                            <p class="lbl-caption" style="font-size: 11.5px; line-height: 1.4;">Optional: Enter your external financial data API keys below to pull live rates from Yahoo Finance, Finnhub, or Alpha Vantage. If left blank, the platform utilizes our high-fidelity Geometric Brownian Motion simulator thread.</p>
+                            
+                            <div id="profileApiFeedback"></div>
+
+                            <div class="form-group" style="margin-top: 5px;">
+                                <label class="form-label">Finnhub Key</label>
+                                <input type="text" id="profileFinnhubKey" class="form-input" placeholder="Enter Finnhub API Key">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Alpha Vantage Key</label>
+                                <input type="text" id="profileAvKey" class="form-input" placeholder="Enter Alpha Vantage API Key">
+                            </div>
+                            <button onclick="uiController.saveApiKeys()" class="btn btn-primary" style="margin-top: 5px;">Apply Credentials</button>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </main>
+    </div>
+
+    <!-- Core Logic script -->
+    <script src="app.js"></script>
+</body>
+</html>
