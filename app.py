@@ -207,7 +207,7 @@ def show_login_signup():
     
     with tab_login:
         email = st.text_input("Email Address", key="login_email").strip().lower()
-        password = st.password_input("Password", key="login_password")
+        password = st.text_input("Password", key="login_password", type="password")
         if st.button("Sign In", use_container_width=True):
             conn = get_db_connection()
             cursor = conn.cursor()
@@ -231,8 +231,8 @@ def show_login_signup():
     with tab_register:
         name = st.text_input("Full Name", key="reg_name").strip()
         email = st.text_input("Email Address", key="reg_email").strip().lower()
-        password = st.password_input("Create Password", key="reg_password")
-        confirm = st.password_input("Confirm Password", key="reg_confirm")
+        password = st.text_input("Create Password", key="reg_password", type="password")
+        confirm = st.text_input("Confirm Password", key="reg_confirm", type="password")
         
         if st.button("Register Trader", use_container_width=True):
             if not name or not email or not password or not confirm:
@@ -624,9 +624,9 @@ else:
         
         with col_pr1:
             st.write("#### Secure Password Reset")
-            cur_pass = st.password_input("Current Password", key="prof_cur")
-            new_pass = st.password_input("New Password", key="prof_new")
-            confirm_pass = st.password_input("Confirm New Password", key="prof_confirm")
+            cur_pass = st.text_input("Current Password", key="prof_cur", type="password")
+            new_pass = st.text_input("New Password", key="prof_new", type="password")
+            confirm_pass = st.text_input("Confirm New Password", key="prof_confirm", type="password")
             
             if st.button("Update Password"):
                 if not cur_pass or not new_pass or not confirm_pass:
