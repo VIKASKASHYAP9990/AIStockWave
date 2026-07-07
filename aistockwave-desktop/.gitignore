@@ -1,0 +1,18 @@
+# Compiled class file
+target/
+
+# Log files
+*.log
+
+# Maven binaries
+maven/
+
+# IDE configurations
+.idea/
+*.iml
+.project
+.classpath
+.settings/
+
+# Local properties with passwords (optional, but keep default template)
+# config.properties
