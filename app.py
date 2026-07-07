@@ -34,12 +34,9 @@ def inject_theme_styles():
                 background-color: #F8F9FA !important;
                 color: #0F172A !important;
             }
-            .css-1d391kg, div[data-testid="stSidebar"] {
+            div[data-testid="stSidebar"] {
                 background-color: #FFFFFF !important;
                 border-right: 1px solid #E2E8F0 !important;
-            }
-            .css-1d391kg * {
-                color: #0F172A !important;
             }
             /* Text elements forced color */
             h1, h2, h3, h4, h5, h6, p, label, li, span {
@@ -89,12 +86,9 @@ def inject_theme_styles():
                 background-color: #0B0E14 !important;
                 color: #FFFFFF !important;
             }
-            .css-1d391kg, div[data-testid="stSidebar"] {
+            div[data-testid="stSidebar"] {
                 background-color: #131722 !important;
                 border-right: 1px solid #2A2E39 !important;
-            }
-            .css-1d391kg * {
-                color: #FFFFFF !important;
             }
             h1, h2, h3, h4, h5, h6, p, label, li, span {
                 color: #FFFFFF !important;
@@ -245,10 +239,10 @@ def show_landing_page():
         st.markdown("<h2 style='color:#2962FF; font-family:Outfit; margin-top:0;'>🌊 AIStockWave</h2>", unsafe_allow_html=True)
     with col_nav2:
         col_btn1, col_btn2 = st.columns(2)
-        if col_btn1.button("Log In", use_container_width=True):
+        if col_btn1.button("Log In", use_container_width=True, key="landing_login_btn"):
             st.session_state["auth_mode"] = "Login"
             st.rerun()
-        if col_btn2.button("Sign Up", use_container_width=True):
+        if col_btn2.button("Sign Up", use_container_width=True, key="landing_signup_btn"):
             st.session_state["auth_mode"] = "Signup"
             st.rerun()
             
