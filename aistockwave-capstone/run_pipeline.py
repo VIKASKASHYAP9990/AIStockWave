@@ -8,23 +8,24 @@ import os
 print("--- Starting AIStockWave Capstone Data Pipeline (Expanded Schema) ---")
 
 # 1. DATA WRANGLING
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 print("Wrangling data from excel sources...")
-df_stocks = pd.read_excel("raw_stocks_data.xlsx")
-df_news = pd.read_excel("raw_news_data.xlsx")
+df_stocks = pd.read_excel(os.path.join(BASE_DIR, "raw_stocks_data.xlsx"))
+df_news = pd.read_excel(os.path.join(BASE_DIR, "raw_news_data.xlsx"))
 
 # Clean and normalize strings
 df_stocks['Symbol'] = df_stocks['Symbol'].str.upper().str.strip()
 df_stocks['PE Ratio'] = df_stocks['PE Ratio'].fillna(df_stocks['PE Ratio'].mean())
-df_stocks.to_csv("cleaned_stocks_data.csv", index=False)
+df_stocks.to_csv(os.path.join(BASE_DIR, "cleaned_stocks_data.csv"), index=False)
 
 df_news['Title'] = df_news['Title'].str.strip()
 df_news['Source'] = df_news['Source'].str.strip()
-df_news.to_csv("cleaned_news_data.csv", index=False)
+df_news.to_csv(os.path.join(BASE_DIR, "cleaned_news_data.csv"), index=False)
 print("Saved clean CSV datasets.")
 
 # 2. DATABASE INTEGRATION
 print("Building sqlite database schema 'aistockwave.db'...")
-conn = sqlite3.connect("aistockwave.db")
+conn = sqlite3.connect(os.path.join(BASE_DIR, "aistockwave.db"))
 cursor = conn.cursor()
 
 # DDL Create Statements (Expanded Schema)
@@ -128,7 +129,7 @@ CREATE TABLE notifications (
 conn.commit()
 
 # Seed Clean Data into tables
-df_stocks_clean = pd.read_csv("cleaned_stocks_data.csv")
+df_stocks_clean = pd.read_csv(os.path.join(BASE_DIR, "cleaned_stocks_data.csv"))
 df_stocks_clean.columns = [
     'symbol', 'company_name', 'current_price', 'open_price', 'close_price',
     'high_price', 'low_price', 'volume', 'market_cap', 'pe_ratio', 'eps',
@@ -136,7 +137,7 @@ df_stocks_clean.columns = [
 ]
 df_stocks_clean.to_sql("stocks", conn, if_exists="replace", index=False)
 
-df_news_clean = pd.read_csv("cleaned_news_data.csv")
+df_news_clean = pd.read_csv(os.path.join(BASE_DIR, "cleaned_news_data.csv"))
 df_news_clean.columns = ['title', 'description', 'source', 'date']
 df_news_clean.to_sql("news", conn, if_exists="replace", index=False)
 
@@ -168,7 +169,7 @@ plt.title("AIStockWave Tickers ranked by Market Capitalization ($ Billions)", fo
 plt.xlabel("Market Cap ($B)")
 plt.ylabel("Ticker Symbol")
 plt.tight_layout()
-plt.savefig("market_cap_chart.png", dpi=120)
+plt.savefig(os.path.join(BASE_DIR, "market_cap_chart.png"), dpi=120)
 plt.close()
 
 # Chart 2: P/E Distribution
@@ -178,7 +179,7 @@ plt.title("Distribution of Price-to-Earnings (P/E) Ratios", fontsize=12, fontwei
 plt.xlabel("P/E Ratio")
 plt.ylabel("Frequency")
 plt.tight_layout()
-plt.savefig("pe_distribution_chart.png", dpi=120)
+plt.savefig(os.path.join(BASE_DIR, "pe_distribution_chart.png"), dpi=120)
 plt.close()
 
 # Chart 3: Proximity channels
@@ -191,7 +192,7 @@ plt.title("Live Prices relative to 52-Week High & Low Boundaries", fontsize=12, 
 plt.ylabel("Price (₹)")
 plt.legend()
 plt.tight_layout()
-plt.savefig('52w_channels_chart.png', dpi=120)
+plt.savefig(os.path.join(BASE_DIR, '52w_channels_chart.png'), dpi=120)
 plt.close()
 
 conn.close()

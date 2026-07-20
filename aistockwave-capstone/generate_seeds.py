@@ -3,7 +3,7 @@ import pandas as pd
 import os
 
 # Create folder if it doesn't exist
-folder = r"C:\Users\vikas\.gemini\antigravity-ide\scratch\aistockwave-capstone"
+folder = os.path.dirname(os.path.abspath(__file__))
 if not os.path.exists(folder):
     os.makedirs(folder)
 

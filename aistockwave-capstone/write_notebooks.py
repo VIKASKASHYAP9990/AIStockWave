@@ -1,7 +1,7 @@
 import json
 import os
 
-folder = r"C:\Users\vikas\.gemini\antigravity-ide\scratch\aistockwave-capstone"
+folder = os.path.dirname(os.path.abspath(__file__))
 
 def make_notebook(filename, cells):
     nb = {

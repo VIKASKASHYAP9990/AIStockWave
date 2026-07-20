@@ -5,8 +5,8 @@
 $env:JAVA_HOME = "C:\Program Files\Java\jdk1.8.0_202"
 $env:Path = "$env:JAVA_HOME\bin;" + $env:Path
 
-# 2. Identify local Maven path
-$MavenBin = "C:\Users\vikas\.gemini\antigravity-ide\scratch\maven\apache-maven-3.8.8\bin\mvn.cmd"
+# 2. Identify local Maven path dynamically
+$MavenBin = "$PSScriptRoot\..\maven\apache-maven-3.8.8\bin\mvn.cmd"
 
 Write-Host "==========================================" -ForegroundColor Cyan
 Write-Host "      AIStockWave - Compiler & Launcher   " -ForegroundColor Cyan

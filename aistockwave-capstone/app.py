@@ -16,7 +16,7 @@ st.set_page_config(
     page_icon="📈"
 )
 
-DB_PATH = "aistockwave.db"
+DB_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "aistockwave.db")
 
 def get_db_connection():
     return sqlite3.connect(DB_PATH)
